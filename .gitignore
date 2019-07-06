@@ -1,0 +1,6 @@
+/dist/*
+/client-src/*.js
+/static/*
+/src/.vscode/*
+/node_modules
+package-lock.json

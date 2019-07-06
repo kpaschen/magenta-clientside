@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="http://localhost:3000/record.js"></script>
+    <script src="http://localhost:3000/melody.js"></script>
+    <script type="text/javascript">
+        function disposeModels() {
+            record.disposeModels();
+            melody.disposeModels();
+        }
+    </script>
+</head>
+
+<body class="container" onbeforeunload="disposeModels()">
+    <header>
+        <h2> Music from Sounds </h2>
+        <p>Made with <%= hello %></p>
+    </header>
+    <main>
+        <div class="musicmaker">
+            <p> Record some sounds:
+                <button id="recordBtn" onclick="record.record()">Record</button>
+                <audio id="recordPlayer"></audio>
+            </p>
+            <code id="record-results"></code>
+            <p></p>
+
+            <ul>
+                <% styles.forEach(function(style) { %>
+                <li><%= style.name %></li>
+                <% }); %>
+            </ul>
+            <button id="start" onclick="melody.runMelodyRnn(record.melodies)">Play music</button>
+
+            <p><b>Input NoteSequence: </b><code id="melody-cont-inputs">Loading...</code></p>
+            <p><b>Result: </b><code id="melody-cont-results">Loading...</code></p>
+        </div>
+    </main>
+</body>
+
+</html>
