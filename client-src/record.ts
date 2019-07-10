@@ -9,7 +9,7 @@ class Recorder {
     audioChunks = [];
     audioEl: HTMLAudioElement;
 
-    melodies: mm.INoteSequence[];
+    melody: mm.INoteSequence;
     oafA: mm.OnsetsAndFrames;
     ready: Promise<void>;
 
@@ -20,7 +20,6 @@ class Recorder {
         this.oafA = new mm.OnsetsAndFrames(`${common.CHECKPOINTS_DIR}/transcription/onsets_frames_uni`);
         this.ready = new Promise((resolve, reject) => {
             this.oafA.initialize().then((result) => {
-                // update the display
                 const el = document.getElementById("oafa-model-loading-status");
                 el.style.visibility = "hidden";
                 const btn = document.getElementById('recordBtn');
@@ -29,20 +28,6 @@ class Recorder {
             }
             ).catch(failure => { alert(failure); })
         });
-
-        const melody_seed = {
-            notes: [
-                { pitch: 40, quantizedStartStep: 0, quantizedEndStep: 4 },
-                { pitch: 50, quantizedStartStep: 4, quantizedEndStep: 7 },
-                { pitch: 60, quantizedStartStep: 8, quantizedEndStep: 11 },
-                { pitch: 70, quantizedStartStep: 12, quantizedEndStep: 16 },
-            ],
-            quantizationInfo: { stepsPerQuarter: 4 },
-            tempos: [{ time: 0, qpm: 120 }],
-            totalQuantizedSteps: 4,
-        };
-
-        this.melodies = [melody_seed];
     }
 
     disposeModels() {
@@ -56,8 +41,8 @@ class Recorder {
         this.audioEl.src = window.URL.createObjectURL(blob);
         this.ready.then(async () => {
             const ns = await this.oafA.transcribeFromAudioFile(blob);
-            this.melodies = this.melodies.concat(ns);
-            common.writeNoteSeqs(`record-results`, [ns], true, false);
+            this.melody = ns;
+            common.writeNoteSeqs(`record-results`, ns, true, false);
             const rnnBtn = document.getElementById('startRnn');
             rnnBtn.removeAttribute('disabled');
         });
@@ -118,7 +103,6 @@ class Recorder {
             recordBtn.textContent = 'Record';
         } else {
             this.isRecording = true;
-            this.melodies = [];
             this.audioChunks = [];
             recordBtn.textContent = 'Stop recording';
             navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {

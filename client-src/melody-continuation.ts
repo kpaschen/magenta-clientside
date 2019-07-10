@@ -137,26 +137,22 @@ class Melody {
     });
   }
 
-  async runMelodyRnn(noteSequences) {
+  async runMelodyRnn(noteSequence) {
     // Display the input.
-    let sequences = [];
-    noteSequences.forEach(ns => {
-      const qns = mm.sequences.quantizeNoteSequence(ns, 4);
-      console.log('piece of original input: ');
-      console.log(qns);
-      this.adjustPitches(qns, this.melodyRnnSpec.dataConverter.args.minPitch,
-        this.melodyRnnSpec.dataConverter.args.maxPitch);
-      sequences = sequences.concat(qns);
-    });
+    const qns = mm.sequences.quantizeNoteSequence(noteSequence, 4);
+    console.log('original input: ');
+    console.log(qns);
+    this.adjustPitches(qns, this.melodyRnnSpec.dataConverter.args.minPitch,
+      this.melodyRnnSpec.dataConverter.args.maxPitch);
     console.log('adjusted input: ');
-    console.log(sequences);
+    console.log(qns);
 
-    common.writeNoteSeqs('melody-cont-inputs', sequences);
+    common.writeNoteSeqs('melody-cont-inputs', qns);
     // TODO: concatenate the note sequences.
-    const continuation = await this.melodyRnn.continueSequence(sequences[0], 20, 1.0, ['C']);
+    const continuation = await this.melodyRnn.continueSequence(qns, 20, 1.0, ['C']);
     console.log('continuation; ');
     console.log(continuation);
-    common.writeNoteSeqs('melody-cont-results', [continuation]);
+    common.writeNoteSeqs('melody-cont-results', continuation);
   }
 }
 
