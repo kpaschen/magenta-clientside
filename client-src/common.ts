@@ -66,48 +66,38 @@ const createPlayer = (seq: mm.INoteSequence, useSoundFontPlayer = false) => {
     return div;
 }
 
-export const writeNoteSeqs = (elementId: string, seqs: mm.INoteSequence[],
-    append = false,
+export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence,
     useSoundFontPlayer = false, writeVelocity = false) => {
     const element = document.getElementById(elementId);
-    if (!append) {
-        while (element.firstChild) {
-            element.removeChild(element.firstChild);
-        }
-    }
-    seqs.forEach(seq => {
-        const details = document.createElement('details');
-        const summary = document.createElement('summary');
-        summary.textContent = 'View NoteSequence';
-        details.appendChild(summary);
 
-        const seqText = document.createElement('span');
-        const isQuantized = mm.sequences.isQuantizedSequence(seq);
-        seqText.innerHTML = '[' +
-            seq.notes
-                .map(n => {
-                    let s = '{p:' + n.pitch + ' s:' +
-                        (isQuantized ? n.quantizedStartStep :
-                            n.startTime.toPrecision(2));
-                    const end =
-                        isQuantized ? n.quantizedEndStep : n.endTime.toPrecision(3);
-                    if (end != null) {
-                        s += ' e:' + end;
-                    }
-                    if (writeVelocity) {
-                        s += ' v:' + n.velocity;
-                    }
-                    s += '}';
-                    return s;
-                })
-                .join(', ') +
-            ']';
-        details.appendChild(seqText);
-        console.log('appended: ' + seqText);
-        details.appendChild(createPlayer(seq, useSoundFontPlayer));
-        console.log('added player');
-        element.appendChild(details);
-        console.log('appended details');
-    });
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = 'View NoteSequence';
+    details.appendChild(summary);
+
+    const seqText = document.createElement('span');
+    const isQuantized = mm.sequences.isQuantizedSequence(seq);
+    seqText.innerHTML = '[' +
+        seq.notes
+            .map(n => {
+                let s = '{p:' + n.pitch + ' s:' +
+                    (isQuantized ? n.quantizedStartStep :
+                        n.startTime.toPrecision(2));
+                const end =
+                    isQuantized ? n.quantizedEndStep : n.endTime.toPrecision(3);
+                if (end != null) {
+                    s += ' e:' + end;
+                }
+                if (writeVelocity) {
+                    s += ' v:' + n.velocity;
+                }
+                s += '}';
+                return s;
+            })
+            .join(', ') +
+        ']';
+    details.appendChild(seqText);
+    details.appendChild(createPlayer(seq, useSoundFontPlayer));
+    element.appendChild(details);
 }
 
