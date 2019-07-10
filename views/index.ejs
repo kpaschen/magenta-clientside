@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="/basic.css">
     <script src="http://localhost:3000/record.js"></script>
     <script src="http://localhost:3000/melody.js"></script>
     <script type="text/javascript">
@@ -18,11 +19,17 @@
         <p>Made with <%= hello %></p>
     </header>
     <main>
+        <div>
+            <span id="oafa-model-loading-status" style="visibility:inline;">Loading oafA Model</span>
+            <br />
+            <span id="rnn-model-loading-status" style="visibility:inline;">Loading RNN Models</span>
+        </div>
         <div class="musicmaker">
             <p> Record some sounds:
-                <button id="recordBtn" onclick="record.record()">Record</button>
+                <button disabled id="recordBtn" onclick="record.record()">Record</button>
                 <audio id="recordPlayer"></audio>
             </p>
+            <canvas id="sound-visualization" height="60px"></canvas>
             <code id="record-results"></code>
             <p></p>
 
@@ -31,10 +38,10 @@
                 <li><%= style.name %></li>
                 <% }); %>
             </ul>
-            <button id="start" onclick="melody.runMelodyRnn(record.melodies)">Play music</button>
+            <button disabled id="startRnn" onclick="melody.runMelodyRnn(record.melodies)">Play music</button>
 
-            <p><b>Input NoteSequence: </b><code id="melody-cont-inputs">Loading...</code></p>
-            <p><b>Result: </b><code id="melody-cont-results">Loading...</code></p>
+            <p><b>Input NoteSequence: </b><code id="melody-cont-inputs"></code></p>
+            <p><b>Result: </b><code id="melody-cont-results"></code></p>
         </div>
     </main>
 </body>

@@ -103,8 +103,11 @@ export const writeNoteSeqs = (elementId: string, seqs: mm.INoteSequence[],
                 .join(', ') +
             ']';
         details.appendChild(seqText);
+        console.log('appended: ' + seqText);
         details.appendChild(createPlayer(seq, useSoundFontPlayer));
+        console.log('added player');
         element.appendChild(details);
+        console.log('appended details');
     });
 }
 

@@ -6,19 +6,31 @@ class Recorder {
 
     isRecording: boolean = false;
     recordingObj: any = null;
-    melody_seed: mm.INoteSequence;
+    audioChunks = [];
+    audioEl: HTMLAudioElement;
+
     melodies: mm.INoteSequence[];
     oafA: mm.OnsetsAndFrames;
     ready: Promise<void>;
 
+    animationHandle: number = undefined;
+    analyzer: AnalyserNode = undefined;
+
     constructor() {
         this.oafA = new mm.OnsetsAndFrames(`${common.CHECKPOINTS_DIR}/transcription/onsets_frames_uni`);
         this.ready = new Promise((resolve, reject) => {
-            this.oafA.initialize().then((result) => { resolve(undefined); }
+            this.oafA.initialize().then((result) => {
+                // update the display
+                const el = document.getElementById("oafa-model-loading-status");
+                el.style.visibility = "hidden";
+                const btn = document.getElementById('recordBtn');
+                btn.removeAttribute('disabled');
+                resolve(undefined);
+            }
             ).catch(failure => { alert(failure); })
         });
 
-        this.melody_seed = {
+        const melody_seed = {
             notes: [
                 { pitch: 40, quantizedStartStep: 0, quantizedEndStep: 4 },
                 { pitch: 50, quantizedStartStep: 4, quantizedEndStep: 7 },
@@ -30,7 +42,7 @@ class Recorder {
             totalQuantizedSteps: 4,
         };
 
-        this.melodies = [this.melody_seed];
+        this.melodies = [melody_seed];
     }
 
     disposeModels() {
@@ -39,14 +51,61 @@ class Recorder {
     }
 
     async transcribeFromFile(blob) {
-        const audioEl: HTMLAudioElement = <HTMLAudioElement>document.getElementById('recordPlayer');
-        audioEl.hidden = false;
-        audioEl.src = window.URL.createObjectURL(blob);
+        this.audioEl = <HTMLAudioElement>document.getElementById('recordPlayer');
+        this.audioEl.hidden = false;
+        this.audioEl.src = window.URL.createObjectURL(blob);
         this.ready.then(async () => {
             const ns = await this.oafA.transcribeFromAudioFile(blob);
             this.melodies = this.melodies.concat(ns);
             common.writeNoteSeqs(`record-results`, [ns], true, false);
+            const rnnBtn = document.getElementById('startRnn');
+            rnnBtn.removeAttribute('disabled');
         });
+    }
+
+    draw = function () {
+        console.log('draw called');
+        this.animationHandle = requestAnimationFrame(this.draw.bind(this));
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('sound-visualization');
+        const canvasCtx = canvas.getContext('2d');
+        const WIDTH = canvas.width
+        const HEIGHT = canvas.height;
+
+        const bufferLength = this.analyzer.frequencyBinCount;
+        let dataArray = new Uint8Array(bufferLength);
+        this.analyzer.getByteTimeDomainData(dataArray);
+        console.log('tf domain: ' + dataArray);
+
+        canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+        canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+        canvasCtx.lineWidth = 1;
+        canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+        canvasCtx.beginPath();
+        const sliceWidth = WIDTH * 1.0 / bufferLength;
+        let x = 0;
+
+        for (var i = 0; i < bufferLength; i++) {
+            const v = dataArray[i] / 128.0;
+            const y = v * HEIGHT / 2;
+            if (i === 0) {
+                canvasCtx.moveTo(x, y);
+            } else {
+                canvasCtx.lineTo(x, y);
+            }
+
+            x += sliceWidth;
+        }
+        canvasCtx.lineTo(WIDTH, HEIGHT / 2);
+        canvasCtx.stroke();
+
+    };
+
+    async visualize(stream) {
+        const source = mm.Player.tone.context.createMediaStreamSource(stream);
+        this.analyzer = mm.Player.tone.context.createAnalyser();
+        this.analyzer.fftSize = 2048;
+        source.connect(this.analyzer);
+        this.draw.bind(this)();
     }
 
     record = () => {
@@ -54,23 +113,33 @@ class Recorder {
         mm.Player.tone.context.resume();
         if (this.isRecording && !isNull(this.recordingObj)) {
             this.recordingObj.stop();
+            cancelAnimationFrame(this.animationHandle);
             this.isRecording = false;
             recordBtn.textContent = 'Record';
         } else {
             this.isRecording = true;
             this.melodies = [];
+            this.audioChunks = [];
             recordBtn.textContent = 'Stop recording';
             navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
                 this.recordingObj = new MediaRecorder(stream);
+                this.visualize(stream);
+
                 this.recordingObj.addEventListener('dataavailable', e => {
-                    this.transcribeFromFile(e.data);
+                    console.log('got data: ');
+                    this.audioChunks.push(e.data);
                 });
-                this.recordingObj.start(5000);
+                this.recordingObj.onstop = function (e) {
+                    const blob = new Blob(recorder.audioChunks);
+                    recorder.transcribeFromFile(blob);
+                }
+                this.recordingObj.start(1000);
+
             }).catch(err => {
                 this.isRecording = false;
                 recordBtn.textContent = 'Record';
                 alert(err);
-            })
+            });
         }
     }
 }
