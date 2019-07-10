@@ -66,6 +66,27 @@ const createPlayer = (seq: mm.INoteSequence, useSoundFontPlayer = false) => {
     return div;
 }
 
+export const addStatusMessage = (parentId: string, elementId: string, msg: string) => {
+    const el = document.getElementById(parentId);
+    const readymsg = document.getElementById("ready-msg");
+    readymsg.setAttribute("style", "visibility:hidden;");
+    const newmsg = document.createElement("p");
+    newmsg.innerText = msg;
+    newmsg.setAttribute('id', elementId);
+    newmsg.setAttribute('class', 'status-message');
+    el.appendChild(newmsg);
+};
+
+export const removeStatusMessage = (msgElementId: string) => {
+    const el = document.getElementById(msgElementId);
+    const pt = el.parentElement;
+    pt.removeChild(el);
+    if (pt.childElementCount == 0) {
+        const readymsg = document.getElementById('ready-msg');
+        readymsg.setAttribute("style", "visibility:inline");
+    }
+}
+
 export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence,
     useSoundFontPlayer = false, writeVelocity = false) => {
     const element = document.getElementById(elementId);
@@ -76,6 +97,7 @@ export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence,
     details.appendChild(summary);
 
     const seqText = document.createElement('span');
+    seqText.classList.add('note-sequence');
     const isQuantized = mm.sequences.isQuantizedSequence(seq);
     seqText.innerHTML = '[' +
         seq.notes
@@ -96,8 +118,8 @@ export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence,
             })
             .join(', ') +
         ']';
-    details.appendChild(seqText);
     details.appendChild(createPlayer(seq, useSoundFontPlayer));
+    details.appendChild(seqText);
     element.appendChild(details);
 }
 
