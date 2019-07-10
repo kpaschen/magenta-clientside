@@ -17,7 +17,7 @@ class App {
         { name: 'drums', id: 'makeRnnDrums' },
         { chords: 'chords', id: 'makeRnnChords' },
       ];
-      res.render('index', { styles: styles, hello: 'magenta' })
+      res.render('index', { styles: styles })
     })
     this.express.use('/', router)
     this.express.use(express.static('static'))

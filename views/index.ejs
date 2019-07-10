@@ -13,35 +13,50 @@
     </script>
 </head>
 
-<body class="container" onbeforeunload="disposeModels()">
+<body class="container" onbeforeunload="disposeModels()" onload="record.initCanvas()">
     <header>
-        <h2> Music from Sounds </h2>
-        <p>Made with <%= hello %></p>
+        <h1> Music from ambient sounds </h1>
     </header>
     <main>
-        <div>
-            <span id="oafa-model-loading-status" style="visibility:inline;">Loading oafA Model</span>
-            <br />
-            <span id="rnn-model-loading-status" style="visibility:inline;">Loading RNN Models</span>
-        </div>
-        <div class="musicmaker">
-            <p> Record some sounds:
-                <button disabled id="recordBtn" onclick="record.record()">Record</button>
-                <audio id="recordPlayer"></audio>
-            </p>
-            <canvas id="sound-visualization" height="60px"></canvas>
-            <code id="record-results"></code>
-            <p></p>
+        <div class="row-container">
+            <div class="column-container" style="flex-grow: 3; margin: 0.4em;">
+                <div class="recorder">
+                    <div class="player-container">
+                        <button disabled id="recordBtn" onclick="record.record()">Record</button>
+                        <canvas id="sound-visualization" class="sound-visualization-canvas"></canvas>
+                    </div>
+                    <audio id="recordPlayer"></audio>
+                    <code id="record-results"></code>
+                </div>
+                <div class="composer">
+                    <ul>
+                        <% styles.forEach(function(style) { %>
+                        <li><%= style.name %></li>
+                        <% }); %>
+                    </ul>
+                    <button disabled id="startRnn" onclick="melody.runMelodyRnn(record.melody)">Make music</button>
 
-            <ul>
-                <% styles.forEach(function(style) { %>
-                <li><%= style.name %></li>
-                <% }); %>
-            </ul>
-            <button disabled id="startRnn" onclick="melody.runMelodyRnn(record.melody)">Play music</button>
-
-            <p><b>Input NoteSequence: </b><code id="melody-cont-inputs"></code></p>
-            <p><b>Result: </b><code id="melody-cont-results"></code></p>
+                    <p><b>Input NoteSequence: </b><code id="melody-cont-inputs"></code></p>
+                    <p><b>Result: </b><code id="melody-cont-results"></code></p>
+                </div>
+            </div>
+            <div style="width: 0.5em; background-color: magenta; margin: 0.4em;"></div>
+            <div class="column-container" style="margin: 0.em;">
+                <div class="status-message-container">
+                    <h3>Status</h3>
+                    <span class="status-message" id="ready-msg" style="visibility:hidden;">Ready</span>
+                    <span id="status-messages"></span>
+                </div>
+                <hr width=100% />
+                <div class="status-message-container">
+                    <h3>What is this?</h3>
+                    <span class="status-message">
+                        This is a toy page where I try a few
+                        <a href="https://magenta.tensorflow.org/">Magenta</a> tools for generating
+                        Music automatically.
+                    </span>
+                </div>
+            </div>
         </div>
     </main>
 </body>

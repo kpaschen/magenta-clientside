@@ -3,7 +3,6 @@ import * as common from './common';
 import { isNull } from 'util';
 
 class Recorder {
-
     isRecording: boolean = false;
     recordingObj: any = null;
     audioChunks = [];
@@ -20,8 +19,7 @@ class Recorder {
         this.oafA = new mm.OnsetsAndFrames(`${common.CHECKPOINTS_DIR}/transcription/onsets_frames_uni`);
         this.ready = new Promise((resolve, reject) => {
             this.oafA.initialize().then((result) => {
-                const el = document.getElementById("oafa-model-loading-status");
-                el.style.visibility = "hidden";
+                common.removeStatusMessage('oafa-model-loading-status');
                 const btn = document.getElementById('recordBtn');
                 btn.removeAttribute('disabled');
                 resolve(undefined);
@@ -45,7 +43,21 @@ class Recorder {
             common.writeNoteSeqs(`record-results`, ns, true, false);
             const rnnBtn = document.getElementById('startRnn');
             rnnBtn.removeAttribute('disabled');
+            common.removeStatusMessage('transcribing');
         });
+    }
+
+    initCanvas() {
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('sound-visualization');
+        const canvasCtx = canvas.getContext('2d');
+        canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+        canvasCtx.lineWidth = 1;
+        canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+
+        // TODO: move these to a better place.
+        common.addStatusMessage('status-messages', 'oafa-model-loading-status', "Loading oafa model");
+        common.addStatusMessage('status-messages', 'rnn-model-loading-status', 'Loading Rnn Models');
     }
 
     draw = function () {
@@ -55,16 +67,13 @@ class Recorder {
         const canvasCtx = canvas.getContext('2d');
         const WIDTH = canvas.width
         const HEIGHT = canvas.height;
+        canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
         const bufferLength = this.analyzer.frequencyBinCount;
         let dataArray = new Uint8Array(bufferLength);
         this.analyzer.getByteTimeDomainData(dataArray);
         console.log('tf domain: ' + dataArray);
 
-        canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-        canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
-        canvasCtx.lineWidth = 1;
-        canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
         canvasCtx.beginPath();
         const sliceWidth = WIDTH * 1.0 / bufferLength;
         let x = 0;
@@ -77,12 +86,10 @@ class Recorder {
             } else {
                 canvasCtx.lineTo(x, y);
             }
-
             x += sliceWidth;
         }
         canvasCtx.lineTo(WIDTH, HEIGHT / 2);
         canvasCtx.stroke();
-
     };
 
     async visualize(stream) {
@@ -101,10 +108,12 @@ class Recorder {
             cancelAnimationFrame(this.animationHandle);
             this.isRecording = false;
             recordBtn.textContent = 'Record';
+            common.removeStatusMessage('recording');
         } else {
             this.isRecording = true;
             this.audioChunks = [];
             recordBtn.textContent = 'Stop recording';
+            common.addStatusMessage('status-messages', 'recording', 'Recording');
             navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
                 this.recordingObj = new MediaRecorder(stream);
                 this.visualize(stream);
@@ -115,6 +124,7 @@ class Recorder {
                 });
                 this.recordingObj.onstop = function (e) {
                     const blob = new Blob(recorder.audioChunks);
+                    common.addStatusMessage('status-messages', 'transcribing', 'Transcribing audio');
                     recorder.transcribeFromFile(blob);
                 }
                 this.recordingObj.start(1000);

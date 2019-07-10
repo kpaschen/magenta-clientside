@@ -102,8 +102,7 @@ class Melody {
       });
       this.melodyRnn.initialize().then((result) => {
         // Update display
-        const el = document.getElementById("rnn-model-loading-status");
-        el.style.visibility = "hidden";
+        common.removeStatusMessage('rnn-model-loading-status');
         resolve(undefined);
       }
       ).catch(failure => { alert(failure); })
@@ -138,6 +137,7 @@ class Melody {
   }
 
   async runMelodyRnn(noteSequence) {
+    common.addStatusMessage('status-messages', 'composing', 'Composing');
     // Display the input.
     const qns = mm.sequences.quantizeNoteSequence(noteSequence, 4);
     console.log('original input: ');
@@ -153,6 +153,7 @@ class Melody {
     console.log('continuation; ');
     console.log(continuation);
     common.writeNoteSeqs('melody-cont-results', continuation);
+    common.removeStatusMessage('composing');
   }
 }
 
