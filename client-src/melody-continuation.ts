@@ -100,8 +100,13 @@ class Melody {
         console.log(JSON.stringify(json));
         this.melodyRnnSpec = json;
       });
-      this.melodyRnn.initialize().then((result) => { resolve(undefined); }
-      )
+      this.melodyRnn.initialize().then((result) => {
+        // Update display
+        const el = document.getElementById("rnn-model-loading-status");
+        el.style.visibility = "hidden";
+        resolve(undefined);
+      }
+      ).catch(failure => { alert(failure); })
     });
   }
 

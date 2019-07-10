@@ -3,20 +3,21 @@ import * as express from 'express';
 class App {
   public express
 
-  constructor () {
+  constructor() {
     this.express = express()
     this.express.set('view engine', 'ejs')
     this.mountRoutes()
   }
 
-  private mountRoutes (): void {
+  private mountRoutes(): void {
     const router = express.Router()
     router.get('/', (req, res) => {
       const styles = [
-        { name: 'melody', id: 'makeRnnMelody'},
-        { name: 'drums', id: 'makeRnnDrums'}
+        { name: 'melody', id: 'makeRnnMelody' },
+        { name: 'drums', id: 'makeRnnDrums' },
+        { chords: 'chords', id: 'makeRnnChords' },
       ];
-      res.render('index', { styles: styles, hello: 'magenta'})
+      res.render('index', { styles: styles, hello: 'magenta' })
     })
     this.express.use('/', router)
     this.express.use(express.static('static'))
