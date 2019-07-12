@@ -13,9 +13,10 @@ class App {
     const router = express.Router()
     router.get('/', (req, res) => {
       const styles = [
-        { name: 'melody', id: 'makeRnnMelody' },
-        { name: 'drums', id: 'makeRnnDrums' },
-        { chords: 'chords', id: 'makeRnnChords' },
+        { name: 'Basic', id: 'Basic' },
+        { name: 'Melody', id: 'Melody' },
+        { name: 'Drum Kit', id: 'DrumKit' },
+        { name: 'Chords', id: 'Chords' },
       ];
       res.render('index', { styles: styles })
     })
