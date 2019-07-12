@@ -24,7 +24,7 @@ class Recorder {
                 btn.removeAttribute('disabled');
                 resolve(undefined);
             }
-            ).catch(failure => { alert(failure); })
+            ).catch(failure => { console.log(failure); })
         });
     }
 
@@ -34,9 +34,11 @@ class Recorder {
     }
 
     async transcribeFromFile(blob) {
+        /*
         this.audioEl = <HTMLAudioElement>document.getElementById('recordPlayer');
         this.audioEl.hidden = false;
         this.audioEl.src = window.URL.createObjectURL(blob);
+        */
         this.ready.then(async () => {
             const ns = await this.oafA.transcribeFromAudioFile(blob);
             this.melody = ns;
@@ -61,7 +63,6 @@ class Recorder {
     }
 
     draw = function () {
-        console.log('draw called');
         this.animationHandle = requestAnimationFrame(this.draw.bind(this));
         const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('sound-visualization');
         const canvasCtx = canvas.getContext('2d');
@@ -72,7 +73,6 @@ class Recorder {
         const bufferLength = this.analyzer.frequencyBinCount;
         let dataArray = new Uint8Array(bufferLength);
         this.analyzer.getByteTimeDomainData(dataArray);
-        console.log('tf domain: ' + dataArray);
 
         canvasCtx.beginPath();
         const sliceWidth = WIDTH * 1.0 / bufferLength;
@@ -119,7 +119,6 @@ class Recorder {
                 this.visualize(stream);
 
                 this.recordingObj.addEventListener('dataavailable', e => {
-                    console.log('got data: ');
                     this.audioChunks.push(e.data);
                 });
                 this.recordingObj.onstop = function (e) {
@@ -132,7 +131,7 @@ class Recorder {
             }).catch(err => {
                 this.isRecording = false;
                 recordBtn.textContent = 'Record';
-                alert(err);
+                console.log('error getting user media: ' + err);
             });
         }
     }
