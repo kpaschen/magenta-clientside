@@ -1,6 +1,6 @@
 import * as mm from '@magenta/music';
 import * as common from './common';
-import { isNull } from 'util';
+import { isNull, isNullOrUndefined } from 'util';
 
 class Recorder {
     isRecording: boolean = false;
@@ -34,11 +34,13 @@ class Recorder {
     }
 
     async transcribeFromFile(blob) {
-        /*
-        this.audioEl = <HTMLAudioElement>document.getElementById('recordPlayer');
-        this.audioEl.hidden = false;
-        this.audioEl.src = window.URL.createObjectURL(blob);
-        */
+        const el = document.getElementById('record-results');
+        if (!isNullOrUndefined(el)) {
+            const details = el.getElementsByTagName("details");
+            while (details.length > 0) {
+                el.removeChild(details[0]);
+            }
+        }
         this.ready.then(async () => {
             const ns = await this.oafA.transcribeFromAudioFile(blob);
             this.melody = ns;

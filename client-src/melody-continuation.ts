@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 
 import * as mm from '@magenta/music';
 import * as common from './common';
+import * as m2n from './miditonote';
 
 const MEL_CHECKPOINT = `${common.CHECKPOINTS_DIR}/music_rnn/basic_rnn`;
 const DRUMS_CHECKPOINT = `${common.CHECKPOINTS_DIR}/music_rnn/drum_kit_rnn`;
@@ -113,46 +114,29 @@ class Melody {
     this.melodyRnn.dispose();
   }
 
-  adjustPitches(seqs: mm.INoteSequence, minPitch, maxPitch) {
-    let actualMinPitch = 100;
-    let actualMaxPitch = 0;
-
-    seqs.notes.forEach(n => {
-      if (n.pitch < actualMinPitch) { actualMinPitch = n.pitch; }
-      if (n.pitch > actualMaxPitch) { actualMaxPitch = n.pitch; }
-    });
-
-    // Have to fit the actual pitches into the spec pitches.
-    // This maps them onto the whole range, which really distorts the
-    // melody though.
-    const ratio = (maxPitch - minPitch) / (actualMaxPitch - actualMinPitch);
-    const newStart = minPitch - actualMinPitch;
-
-    seqs.notes.forEach(n => {
-      const dist = n.pitch - actualMinPitch;
-      n.pitch = (n.pitch + newStart) + (dist * ratio);
-      if (n.pitch > maxPitch) { n.pitch = maxPitch; }
-      if (n.pitch < minPitch) { n.pitch = minPitch; }
-    });
-  }
-
   async runMelodyRnn(noteSequence) {
     common.addStatusMessage('status-messages', 'composing', 'Composing');
     // Display the input.
-    const qns = mm.sequences.quantizeNoteSequence(noteSequence, 4);
-    console.log('original input: ');
-    console.log(qns);
-    this.adjustPitches(qns, this.melodyRnnSpec.dataConverter.args.minPitch,
+    let qns = mm.sequences.quantizeNoteSequence(noteSequence, 4);
+    qns = m2n.mapToPitchRange(qns, this.melodyRnnSpec.dataConverter.args.minPitch,
       this.melodyRnnSpec.dataConverter.args.maxPitch);
-    console.log('adjusted input: ');
-    console.log(qns);
-
-    common.writeNoteSeqs('melody-cont-inputs', qns);
-    // TODO: concatenate the note sequences.
-    const continuation = await this.melodyRnn.continueSequence(qns, 20, 1.0, ['C']);
+    qns = m2n.castTo12Tone(qns);
+    // This will show the inputs modified for the rnn. A bit of a hack: remove previously
+    // visualized inputs here (but not the composition results in melody-cont-results) since
+    // the inputs won't change barring re-recording. It would be cleaner to avoid
+    // transforming the inputs redundantly as well.
+    const inpEl = document.getElementById('melody-cont-inputs');
+    let details = inpEl.getElementsByTagName("details");
+    while (details.length > 0) {
+      inpEl.removeChild(details[0]);
+    }
+    common.writeNoteSeqs('melody-cont-inputs', qns, true);
+    // Take a guess at a step to harmonize with.
+    const hm = m2n.stepAndOctave(qns.notes[qns.notes.length - 1].pitch).step;
+    const continuation = await this.melodyRnn.continueSequence(qns, 20, 1.0, [hm]);
     console.log('continuation; ');
     console.log(continuation);
-    common.writeNoteSeqs('melody-cont-results', continuation);
+    common.writeNoteSeqs('melody-cont-results', continuation, true);
     common.removeStatusMessage('composing');
   }
 }
