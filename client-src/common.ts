@@ -1,4 +1,5 @@
 import * as mm from '@magenta/music';
+import * as m2n from './miditonote';
 
 export const CHECKPOINTS_DIR = 'http://localhost:3000/checkpoints';
 // 'https://storage.googleapis.com/magentadata/js/checkpoints';
@@ -113,11 +114,15 @@ export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence,
                 if (writeVelocity) {
                     s += ' v:' + n.velocity;
                 }
+                const so = m2n.stepAndOctave(n.pitch);
+                s += ' st: ' + so.step;
+                s += ' o: ' + so.octave;
                 s += '}';
                 return s;
             })
             .join(', ') +
         ']';
+    // TODO: also append the pitch names here.
     details.appendChild(createPlayer(seq, useSoundFontPlayer));
     details.appendChild(seqText);
     element.appendChild(details);
