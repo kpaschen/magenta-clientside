@@ -1,5 +1,6 @@
 import * as mm from '@magenta/music';
 import { round } from '@tensorflow/tfjs';
+import { isUndefined } from 'util';
 
 export function stepAndOctave(inPitch) {
     if (inPitch <= 20) { return { 'step': "C", 'octave': 0 }; }
@@ -31,6 +32,12 @@ export function castTo12Tone(seqIn: mm.INoteSequence): mm.NoteSequence {
 
 export function mapToPitchRange(seqIn: mm.INoteSequence, minPitch, maxPitch): mm.NoteSequence {
     let ret: mm.NoteSequence = mm.sequences.clone(seqIn);
+    if (isUndefined(maxPitch) || maxPitch == 0) {
+        maxPitch = 127;
+    }
+    if (isUndefined(minPitch) || minPitch < 21) {
+        minPitch = 21;
+    }
     let actualMinPitch = maxPitch;
     let actualMaxPitch = minPitch;
     ret.notes.forEach((n) => {

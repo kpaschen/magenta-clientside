@@ -10,6 +10,16 @@
             record.disposeModels();
             melody.disposeModels();
         }
+        function compose() {
+            let types = document.getElementsByName("GeneratorStyle");
+            let selectedType = "Basic";
+            types.forEach((t) => {
+                if (t.checked) {
+                    selectedType = t.value;
+                }
+            });
+            melody.runMusicRnn(record.melody, selectedType);
+        }
     </script>
 </head>
 
@@ -29,13 +39,12 @@
                     <code id="record-results"></code>
                 </div>
                 <div class="composer">
-                    <ul>
+                    <button disabled id="startRnn" onclick="compose()">Make music</button>
+                    <p>Choose style:
                         <% styles.forEach(function(style) { %>
-                        <li><%= style.name %></li>
+                        <input type="radio" name="GeneratorStyle" value=<%= style.id %>><%= style.name %></input>
                         <% }); %>
-                    </ul>
-                    <button disabled id="startRnn" onclick="melody.runMelodyRnn(record.melody)">Make music</button>
-
+                    </p>
                     <p><b>Input NoteSequence: </b><code id="melody-cont-inputs"></code></p>
                     <p><b>Result: </b><code id="melody-cont-results"></code></p>
                 </div>
