@@ -1,0 +1,5 @@
+The demo code in this repository uses code provided by the magenta-js project at https://github.com/tensorflow/magenta-js.
+In particular, the code imports libraries obtained via npm.
+
+This use and adaptation is performed under the terms of the magenta-js project's license, which can be obtained here:
+https://github.com/tensorflow/magenta-js/blob/master/LICENSE.
