@@ -44,7 +44,7 @@ class Recorder {
         this.ready.then(async () => {
             const ns = await this.oafA.transcribeFromAudioFile(blob);
             this.melody = ns;
-            common.writeNoteSeqs(`record-results`, ns, true, false);
+            common.writeNoteSeqs(`record-results`, ns);
             const rnnBtn = document.getElementById('startRnn');
             rnnBtn.removeAttribute('disabled');
             common.removeStatusMessage('transcribing');

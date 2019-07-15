@@ -2,11 +2,11 @@ import * as mm from '@magenta/music';
 import * as m2n from './miditonote';
 
 export const CHECKPOINTS_DIR = 'http://localhost:3000/checkpoints';
-// 'https://storage.googleapis.com/magentadata/js/checkpoints';
+
 const SOUNDFONT_URL =
     'https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus';
 
-const createPlayerButton = (seq: mm.INoteSequence, useSoundFontPlayer: boolean, el: SVGSVGElement) => {
+const createPlayerButton = (seq: mm.INoteSequence, el: SVGSVGElement) => {
     const visualizer = new mm.PianoRollSVGVisualizer(seq, el as SVGSVGElement);
     const container = el.parentElement as HTMLDivElement;
 
@@ -25,15 +25,9 @@ const createPlayerButton = (seq: mm.INoteSequence, useSoundFontPlayer: boolean, 
     const button = document.createElement('button');
     button.textContent = 'Play';
 
-    // tslint:disable-next-line:no-any
-    let player: any;
-    if (useSoundFontPlayer) {
-        player = new mm.SoundFontPlayer(
-            SOUNDFONT_URL, undefined, undefined, undefined, callbackObject);
-        player.loadSamples(seq).then(() => button.disabled = false);
-    } else {
-        player = new mm.Player(false, callbackObject);
-    }
+    let player = new mm.SoundFontPlayer(
+        SOUNDFONT_URL, undefined, undefined, undefined, callbackObject);
+    player.loadSamples(seq).then(() => button.disabled = false);
 
     button.addEventListener('click', () => {
         if (player.isPlaying()) {
@@ -48,8 +42,7 @@ const createPlayerButton = (seq: mm.INoteSequence, useSoundFontPlayer: boolean, 
     return button;
 }
 
-const createPlayer = (seq: mm.INoteSequence, useSoundFontPlayer = false) => {
-    // Visualizer
+const createPlayer = (seq: mm.INoteSequence) => {
     const div = document.createElement('div');
     div.classList.add('player-container');
     const containerDiv = document.createElement('div');
@@ -58,9 +51,7 @@ const createPlayer = (seq: mm.INoteSequence, useSoundFontPlayer = false) => {
     containerDiv.appendChild(el);
 
     const buttonsDiv = document.createElement('div');
-    // Regular player.
-    buttonsDiv.appendChild(
-        createPlayerButton(seq, useSoundFontPlayer, el));
+    buttonsDiv.appendChild(createPlayerButton(seq, el));
 
     div.appendChild(buttonsDiv);
     div.appendChild(containerDiv);
@@ -88,8 +79,7 @@ export const removeStatusMessage = (msgElementId: string) => {
     }
 }
 
-export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence,
-    useSoundFontPlayer = false, writeVelocity = false) => {
+export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence) => {
     const element = document.getElementById(elementId);
 
     const details = document.createElement('details');
@@ -111,9 +101,7 @@ export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence,
                 if (end != null) {
                     s += ' e:' + end;
                 }
-                if (writeVelocity) {
-                    s += ' v:' + n.velocity;
-                }
+                s += ' v:' + n.velocity;
                 const so = m2n.stepAndOctave(n.pitch);
                 s += ' st: ' + so.step;
                 s += ' o: ' + so.octave;
@@ -122,9 +110,8 @@ export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence,
             })
             .join(', ') +
         ']';
-    // TODO: also append the pitch names here.
-    details.appendChild(createPlayer(seq, useSoundFontPlayer));
+    // TODO: also append the pitch names here, if they have been populated.
+    details.appendChild(createPlayer(seq));
     details.appendChild(seqText);
     element.appendChild(details);
 }
-
