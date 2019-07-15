@@ -15,7 +15,6 @@ class App {
       const styles = [
         { name: 'Basic', id: 'Basic' },
         { name: 'Melody', id: 'Melody' },
-        { name: 'Drum Kit', id: 'DrumKit' },
         { name: 'Chords', id: 'Chords' },
       ];
       res.render('index', { styles: styles })

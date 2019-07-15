@@ -18,11 +18,6 @@ class Melody {
       spec: undefined, model: undefined,
       supportChords: false,
     },
-    'DrumKit': {
-      path: `${common.CHECKPOINTS_DIR}/music_rnn/drum_kit_rnn`,
-      spec: undefined, model: undefined,
-      supportChords: false
-    },
     'Chords': {
       path: `${common.CHECKPOINTS_DIR}/music_rnn/chord_pitches_improv`,
       spec: undefined, model: undefined,
@@ -33,7 +28,6 @@ class Melody {
   constructor() {
 
     this.models.Melody.model = new mm.MusicRNN(this.models.Melody.path);
-    this.models.DrumKit.model = new mm.MusicRNN(this.models.DrumKit.path);
     this.models.Chords.model = new mm.MusicRNN(this.models.Chords.path);
     this.models.Basic.model = new mm.MusicRNN(this.models.Basic.path);
 
@@ -44,12 +38,6 @@ class Melody {
       }).then((json) => {
         console.log(JSON.stringify(json));
         this.models.Melody.spec = json;
-      });
-      fetch(`${this.models.DrumKit.path}/config.json`).then((spec) => {
-        return spec.json()
-      }).then((json) => {
-        console.log(JSON.stringify(json));
-        this.models.DrumKit.spec = json;
       });
       fetch(`${this.models.Chords.path}/config.json`).then((spec) => {
         return spec.json()
@@ -64,13 +52,11 @@ class Melody {
         this.models.Basic.spec = json;
       });
       this.models.Melody.model.initialize().then((result) => {
-        this.models.DrumKit.model.initialize().then((result) => {
-          this.models.Chords.model.initialize().then((result) => {
-            this.models.Basic.model.initialize().then((results) => {
-              // Update display
-              common.removeStatusMessage('rnn-model-loading-status');
-              resolve(undefined);
-            })
+        this.models.Chords.model.initialize().then((result) => {
+          this.models.Basic.model.initialize().then((results) => {
+            // Update display
+            common.removeStatusMessage('rnn-model-loading-status');
+            resolve(undefined);
           })
         })
       }).catch(failure => { alert(failure); })
@@ -79,7 +65,6 @@ class Melody {
 
   disposeModels() {
     this.models.Melody.model.dispose();
-    this.models.DrumKit.model.dispose();
     this.models.Chords.model.dispose();
     this.models.Basic.model.dispose();
   }
