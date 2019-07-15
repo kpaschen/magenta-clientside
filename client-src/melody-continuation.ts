@@ -55,7 +55,7 @@ class Melody {
         this.models.Chords.model.initialize().then((result) => {
           this.models.Basic.model.initialize().then((results) => {
             // Update display
-            common.removeStatusMessage('rnn-model-loading-status');
+            common.statusMessages().removeStatusMessage('Loading Rnn models');
             resolve(undefined);
           })
         })
@@ -70,7 +70,7 @@ class Melody {
   }
 
   async runMusicRnn(noteSequence, generatorType) {
-    common.addStatusMessage('status-messages', 'composing', 'Composing');
+    common.statusMessages().addStatusMessage('Composing');
     // Display the input.
     let qns = mm.sequences.quantizeNoteSequence(noteSequence, 4);
     let modelType = this.models[generatorType];
@@ -97,7 +97,7 @@ class Melody {
     console.log('continuation; ');
     console.log(continuation);
     common.writeNoteSeqs('melody-cont-results', continuation);
-    common.removeStatusMessage('composing');
+    common.statusMessages().removeStatusMessage('Composing');
   }
 }
 
