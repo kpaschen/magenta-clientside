@@ -101,7 +101,7 @@ class Melody {
     while (details.length > 0) {
       inpEl.removeChild(details[0]);
     }
-    common.writeNoteSeqs('melody-cont-inputs', qns, true);
+    common.writeNoteSeqs('melody-cont-inputs', qns);
     let continuation = undefined;
     if (modelType.supportChords) {
       // Take a guess at a step to harmonize with.
@@ -112,7 +112,7 @@ class Melody {
     }
     console.log('continuation; ');
     console.log(continuation);
-    common.writeNoteSeqs('melody-cont-results', continuation, true);
+    common.writeNoteSeqs('melody-cont-results', continuation);
     common.removeStatusMessage('composing');
   }
 }
