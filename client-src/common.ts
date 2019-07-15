@@ -3,8 +3,11 @@ import * as m2n from './miditonote';
 
 export const CHECKPOINTS_DIR = 'http://localhost:3000/checkpoints';
 
-const SOUNDFONT_URL =
+// URLS from https://github.com/tensorflow/magenta-js/blob/master/music/README.md#soundfonts
+const SGM_URL =
     'https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus';
+const PIANO_URL =
+    'https://storage.googleapis.com/magentadata/js/soundfonts/salamander';
 
 const createPlayerButton = (seq: mm.INoteSequence, el: SVGSVGElement) => {
     const visualizer = new mm.PianoRollSVGVisualizer(seq, el as SVGSVGElement);
@@ -26,7 +29,7 @@ const createPlayerButton = (seq: mm.INoteSequence, el: SVGSVGElement) => {
     button.textContent = 'Play';
 
     let player = new mm.SoundFontPlayer(
-        SOUNDFONT_URL, undefined, undefined, undefined, callbackObject);
+        PIANO_URL, undefined, undefined, undefined, callbackObject);
     player.loadSamples(seq).then(() => button.disabled = false);
 
     button.addEventListener('click', () => {
