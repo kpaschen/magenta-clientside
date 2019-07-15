@@ -19,7 +19,7 @@ class Recorder {
         this.oafA = new mm.OnsetsAndFrames(`${common.CHECKPOINTS_DIR}/transcription/onsets_frames_uni`);
         this.ready = new Promise((resolve, reject) => {
             this.oafA.initialize().then((result) => {
-                common.removeStatusMessage('oafa-model-loading-status');
+                common.statusMessages().removeStatusMessage('Loading oafa model');
                 const btn = document.getElementById('recordBtn');
                 btn.removeAttribute('disabled');
                 resolve(undefined);
@@ -29,7 +29,6 @@ class Recorder {
     }
 
     disposeModels() {
-        console.log('removing recorder model');
         this.oafA.dispose();
     }
 
@@ -47,7 +46,7 @@ class Recorder {
             common.writeNoteSeqs(`record-results`, ns);
             const rnnBtn = document.getElementById('startRnn');
             rnnBtn.removeAttribute('disabled');
-            common.removeStatusMessage('transcribing');
+            common.statusMessages().removeStatusMessage('Transcribing');
         });
     }
 
@@ -60,8 +59,8 @@ class Recorder {
         canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
         // TODO: move these to a better place.
-        common.addStatusMessage('status-messages', 'oafa-model-loading-status', "Loading oafa model");
-        common.addStatusMessage('status-messages', 'rnn-model-loading-status', 'Loading Rnn Models');
+        common.statusMessages().addStatusMessage('Loading oafa model');
+        common.statusMessages().addStatusMessage('Loading Rnn Models');
     }
 
     draw = function () {
@@ -110,12 +109,12 @@ class Recorder {
             cancelAnimationFrame(this.animationHandle);
             this.isRecording = false;
             recordBtn.textContent = 'Record';
-            common.removeStatusMessage('recording');
+            common.statusMessages().removeStatusMessage('Recording');
         } else {
             this.isRecording = true;
             this.audioChunks = [];
             recordBtn.textContent = 'Stop recording';
-            common.addStatusMessage('status-messages', 'recording', 'Recording');
+            common.statusMessages().addStatusMessage('Recording');
             navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
                 this.recordingObj = new MediaRecorder(stream);
                 this.visualize(stream);
@@ -125,7 +124,7 @@ class Recorder {
                 });
                 this.recordingObj.onstop = function (e) {
                     const blob = new Blob(recorder.audioChunks);
-                    common.addStatusMessage('status-messages', 'transcribing', 'Transcribing audio');
+                    common.statusMessages().addStatusMessage('Transcribing');
                     recorder.transcribeFromFile(blob);
                 }
                 this.recordingObj.start(1000);

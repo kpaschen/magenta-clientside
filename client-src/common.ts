@@ -1,5 +1,7 @@
 import * as mm from '@magenta/music';
 import * as m2n from './miditonote';
+import { STATUS_CODES } from 'http';
+import { isNullOrUndefined } from 'util';
 
 export const CHECKPOINTS_DIR = 'http://localhost:3000/checkpoints';
 
@@ -35,27 +37,6 @@ const createPlayButton = (el: SVGElement, seq: mm.INoteSequence) => {
         }
     });
     return button;
-}
-
-export const addStatusMessage = (parentId: string, elementId: string, msg: string) => {
-    const el = document.getElementById(parentId);
-    const readymsg = document.getElementById("ready-msg");
-    readymsg.setAttribute("style", "visibility:hidden;");
-    const newmsg = document.createElement("p");
-    newmsg.innerText = msg;
-    newmsg.setAttribute('id', elementId);
-    newmsg.setAttribute('class', 'status-message');
-    el.appendChild(newmsg);
-};
-
-export const removeStatusMessage = (msgElementId: string) => {
-    const el = document.getElementById(msgElementId);
-    const pt = el.parentElement;
-    pt.removeChild(el);
-    if (pt.childElementCount == 0) {
-        const readymsg = document.getElementById('ready-msg');
-        readymsg.setAttribute("style", "visibility:inline");
-    }
 }
 
 export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence) => {
@@ -108,3 +89,42 @@ export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence) => {
     div.appendChild(details);
     element.appendChild(div);
 }
+
+class StatusMessages {
+    messages: string[] = [];
+    ELEMENTID = 'status-messages';
+
+    addStatusMessage = (msg: string) => {
+        this.messages.push(msg);
+        this.updateStatusDisplay();
+    };
+
+    removeStatusMessage = (msg: string) => {
+        this.messages = this.messages.filter((f) => (f != msg));
+        this.updateStatusDisplay();
+    }
+
+    updateStatusDisplay() {
+        const el = document.getElementById(this.ELEMENTID);
+        if (isNullOrUndefined(el)) {
+            return;
+        }
+        while (el.hasChildNodes()) {
+            el.removeChild(el.firstChild);
+        }
+        if (isNullOrUndefined(this.messages)) {
+            const readymsg = document.getElementById('ready-msg');
+            readymsg.setAttribute("style", "visibility:inline");
+        } else {
+            this.messages.forEach(msg => {
+                const newmsg = document.createElement("p");
+                newmsg.innerText = msg;
+                newmsg.setAttribute('class', 'status-message');
+                el.appendChild(newmsg);
+            });
+        }
+    }
+}
+
+let messages = new StatusMessages();
+export const statusMessages = () => { return messages; }
