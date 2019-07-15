@@ -9,28 +9,20 @@ const SGM_URL =
 const PIANO_URL =
     'https://storage.googleapis.com/magentadata/js/soundfonts/salamander';
 
-const createPlayerButton = (seq: mm.INoteSequence, el: SVGSVGElement) => {
-    const visualizer = new mm.PianoRollSVGVisualizer(seq, el as SVGSVGElement);
-    const container = el.parentElement as HTMLDivElement;
-
-    const callbackObject = {
-        run: (note: mm.NoteSequence.Note) => {
-            const currentNotePosition = visualizer.redraw(note);
-
-            // See if we need to scroll the container.
-            const containerWidth = container.getBoundingClientRect().width;
-            if (currentNotePosition > (container.scrollLeft + containerWidth)) {
-                container.scrollLeft = currentNotePosition - 20;
-            }
-        },
-        stop: () => { }
-    };
+const createPlayButton = (el: SVGElement, seq: mm.INoteSequence) => {
     const button = document.createElement('button');
     button.textContent = 'Play';
 
-    let player = new mm.SoundFontPlayer(
-        PIANO_URL, undefined, undefined, undefined, callbackObject);
-    player.loadSamples(seq).then(() => button.disabled = false);
+    const visualizer = new mm.PianoRollSVGVisualizer(seq, el as SVGSVGElement);
+
+    const callbackObject = {
+        run: (note: mm.NoteSequence.Note) => {
+            const currentNotePosition = visualizer.redraw(note, true);
+        }, stop: () => { }
+    };
+    let player = new mm.SoundFontPlayer(SGM_URL, undefined, undefined, undefined, callbackObject);
+
+    player.loadSamples(seq).then(() => { button.disabled = false; });
 
     button.addEventListener('click', () => {
         if (player.isPlaying()) {
@@ -43,22 +35,6 @@ const createPlayerButton = (seq: mm.INoteSequence, el: SVGSVGElement) => {
         }
     });
     return button;
-}
-
-const createPlayer = (seq: mm.INoteSequence) => {
-    const div = document.createElement('div');
-    div.classList.add('player-container');
-    const containerDiv = document.createElement('div');
-    containerDiv.classList.add('visualizer-container');
-    const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    containerDiv.appendChild(el);
-
-    const buttonsDiv = document.createElement('div');
-    buttonsDiv.appendChild(createPlayerButton(seq, el));
-
-    div.appendChild(buttonsDiv);
-    div.appendChild(containerDiv);
-    return div;
 }
 
 export const addStatusMessage = (parentId: string, elementId: string, msg: string) => {
@@ -84,11 +60,21 @@ export const removeStatusMessage = (msgElementId: string) => {
 
 export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence) => {
     const element = document.getElementById(elementId);
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.appendChild(createPlayButton(el, seq));
 
     const details = document.createElement('details');
     const summary = document.createElement('summary');
     summary.textContent = 'View NoteSequence';
     details.appendChild(summary);
+
+    const containerDiv = document.createElement('div');
+    containerDiv.classList.add('visualizer-container');
+
+    containerDiv.appendChild(el);
+    details.appendChild(containerDiv);
 
     const seqText = document.createElement('span');
     seqText.classList.add('note-sequence');
@@ -113,8 +99,12 @@ export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence) => {
             })
             .join(', ') +
         ']';
-    // TODO: also append the pitch names here, if they have been populated.
-    details.appendChild(createPlayer(seq));
     details.appendChild(seqText);
-    element.appendChild(details);
+
+    const div = document.createElement('div');
+    div.classList.add('player-container');
+
+    div.appendChild(buttonsDiv);
+    div.appendChild(details);
+    element.appendChild(div);
 }

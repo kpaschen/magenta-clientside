@@ -82,9 +82,8 @@ class Melody {
     // the inputs won't change barring re-recording. It would be cleaner to avoid
     // transforming the inputs redundantly as well.
     const inpEl = document.getElementById('melody-cont-inputs');
-    let details = inpEl.getElementsByTagName("details");
-    while (details.length > 0) {
-      inpEl.removeChild(details[0]);
+    while (inpEl.childElementCount > 0) {
+      inpEl.removeChild(inpEl.firstChild);
     }
     common.writeNoteSeqs('melody-cont-inputs', qns);
     let continuation = undefined;
