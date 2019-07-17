@@ -34,22 +34,22 @@ class Melody {
     this.ready = new Promise((resolve, reject) => {
       // This is just to get access to the min and max pitch values.
       fetch(`${this.models.Melody.path}/config.json`).then((spec) => {
-        return spec.json()
-      }).then((json) => {
-        console.log(JSON.stringify(json));
-        this.models.Melody.spec = json;
+        spec.json().then((json) => {
+          console.log(JSON.stringify(json));
+          this.models.Melody.spec = json;
+        });
       });
       fetch(`${this.models.Chords.path}/config.json`).then((spec) => {
-        return spec.json()
-      }).then((json) => {
-        console.log(JSON.stringify(json));
-        this.models.Chords.spec = json;
+        spec.json().then((json) => {
+          console.log(JSON.stringify(json));
+          this.models.Chords.spec = json;
+        });
       });
       fetch(`${this.models.Basic.path}/config.json`).then((spec) => {
-        return spec.json()
-      }).then((json) => {
-        console.log(JSON.stringify(json));
-        this.models.Basic.spec = json;
+        spec.json().then((json) => {
+          console.log(JSON.stringify(json));
+          this.models.Basic.spec = json;
+        });
       });
       this.models.Melody.model.initialize().then((result) => {
         this.models.Chords.model.initialize().then((result) => {
@@ -90,9 +90,9 @@ class Melody {
     if (modelType.supportChords) {
       // Take a guess at a step to harmonize with.
       const hm = m2n.stepAndOctave(qns.notes[qns.notes.length - 1].pitch).step;
-      continuation = await modelType.model.continueSequence(qns, 20, 1.0, [hm]);
+      continuation = await modelType.model.continueSequence(qns, 30, 1.0, [hm]);
     } else {
-      continuation = await modelType.model.continueSequence(qns, 20, 1.0);
+      continuation = await modelType.model.continueSequence(qns, 30, 1.0);
     }
     console.log('continuation; ');
     console.log(continuation);

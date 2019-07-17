@@ -20,6 +20,10 @@ class App {
       res.render('index', { styles: styles })
     })
     this.express.use('/', router)
+    this.express.use(function (req, res, next) {
+      res.header("Access-Control-Allow-Origin", "*");
+      next();
+    });
     this.express.use(express.static('static'))
   }
 }
