@@ -14,6 +14,7 @@ const PIANO_URL =
 const createPlayButton = (el: SVGElement, seq: mm.INoteSequence) => {
     const button = document.createElement('button');
     button.textContent = 'Play';
+    button.disabled = true;
 
     const visualizer = new mm.PianoRollSVGVisualizer(seq, el as SVGSVGElement);
 
@@ -31,9 +32,10 @@ const createPlayButton = (el: SVGElement, seq: mm.INoteSequence) => {
             player.stop();
             button.textContent = 'Play';
         } else {
-            player.start(visualizer.noteSequence)
-                .then(() => (button.textContent = 'Play'));
             button.textContent = 'Stop';
+            player.start(visualizer.noteSequence)
+                .catch((e) => { console.log(e); })
+                .finally(() => { button.textContent = 'Play'; });
         }
     });
     return button;
