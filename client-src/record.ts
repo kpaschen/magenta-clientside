@@ -35,7 +35,7 @@ class Recorder {
     async transcribeFromFile(blob) {
         const el = document.getElementById('record-results');
         if (!isNullOrUndefined(el)) {
-            const details = el.getElementsByTagName("details");
+            const details = el.getElementsByClassName("player-container");
             while (details.length > 0) {
                 el.removeChild(details[0]);
             }
@@ -45,7 +45,9 @@ class Recorder {
             this.melody = ns;
             common.writeNoteSeqs(`record-results`, ns);
             const rnnBtn = document.getElementById('startRnn');
-            rnnBtn.removeAttribute('disabled');
+            if (!isNullOrUndefined(rnnBtn)) {
+                rnnBtn.removeAttribute('disabled');
+            }
             common.statusMessages().removeStatusMessage('Transcribing');
         });
     }
