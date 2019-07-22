@@ -11,6 +11,9 @@ class App {
 
   private mountRoutes(): void {
     const router = express.Router()
+    router.get('/record', (req, res) => {
+      res.render('record');
+    });
     router.get('/', (req, res) => {
       const styles = [
         { name: 'Basic', id: 'Basic' },
@@ -19,7 +22,7 @@ class App {
       ];
       res.render('index', { styles: styles })
     })
-    this.express.use('/', router)
+    this.express.use(router)
     this.express.use(function (req, res, next) {
       res.header("Access-Control-Allow-Origin", "*");
       next();

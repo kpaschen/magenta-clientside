@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/basic.css">
+    <script src="record.js"></script>
+    <script type="text/javascript">
+        function disposeModels() {
+            record.disposeModels();
+        }
+    </script>
+</head>
+
+<body class="container" onbeforeunload="disposeModels()" onload="record.initCanvas()">
+    <main>
+        <div class="row-container" style="max-width: 900px;">
+            <div class="column-container">
+                <div class="recorder">
+                    <div class="player-container" style="align-items: center; margin-top: 0;">
+                        <button disabled id="recordBtn" onclick="record.record()">Record</button>
+                        <canvas id="sound-visualization" class="sound-visualization-canvas"></canvas>
+                    </div>
+                    <audio id="recordPlayer"></audio>
+                    <code id="record-results"></code>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
