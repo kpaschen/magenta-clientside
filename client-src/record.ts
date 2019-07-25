@@ -103,19 +103,25 @@ class Recorder {
         this.draw.bind(this)();
     }
 
+    stopRecording = () => {
+        const recordBtn = <HTMLAudioElement>document.getElementById('recordBtn');
+        this.recordingObj.stop();
+        cancelAnimationFrame(this.animationHandle);
+        this.isRecording = false;
+        recordBtn.textContent = 'Record';
+        common.statusMessages().removeStatusMessage('Recording');
+    }
+
     record = () => {
         const recordBtn = <HTMLAudioElement>document.getElementById('recordBtn');
         mm.Player.tone.context.resume();
         if (this.isRecording && !isNull(this.recordingObj)) {
-            this.recordingObj.stop();
-            cancelAnimationFrame(this.animationHandle);
-            this.isRecording = false;
-            recordBtn.textContent = 'Record';
-            common.statusMessages().removeStatusMessage('Recording');
+            this.stopRecording();
         } else {
             this.isRecording = true;
             this.audioChunks = [];
             recordBtn.textContent = 'Stop recording';
+            const myTimer = setTimeout(function () { this.stopRecording(); }.bind(this), 10000);
             common.statusMessages().addStatusMessage('Recording');
             navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
                 this.recordingObj = new MediaRecorder(stream);
@@ -124,13 +130,15 @@ class Recorder {
                 this.recordingObj.addEventListener('dataavailable', e => {
                     this.audioChunks.push(e.data);
                 });
-                this.recordingObj.onstop = function (e) {
+                this.recordingObj.onstop = function () {
                     const blob = new Blob(recorder.audioChunks);
                     common.statusMessages().addStatusMessage('Transcribing');
                     recorder.transcribeFromFile(blob);
+                    if (!isNullOrUndefined(myTimer)) {
+                        clearTimeout(myTimer);
+                    }
                 }
                 this.recordingObj.start(1000);
-
             }).catch(err => {
                 this.isRecording = false;
                 recordBtn.textContent = 'Record';
