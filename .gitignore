@@ -1,6 +1,7 @@
 /dist/*
 /client-src/*.js
-/static/*
+/static/*.js
+/static/checkpoints/*
 /src/.vscode/*
 /node_modules
 package-lock.json
