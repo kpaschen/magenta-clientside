@@ -55,7 +55,7 @@ class Melody {
         this.models.Chords.model.initialize().then((result) => {
           this.models.Basic.model.initialize().then((results) => {
             // Update display
-            common.statusMessages().removeStatusMessage('Loading Rnn models');
+            common.statusMessages().removeStatusMessage('Loading Composition Models');
             resolve(undefined);
           })
         })
