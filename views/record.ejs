@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
     <link rel="stylesheet" href="/basic.css">
     <script src="record.js"></script>
     <script type="text/javascript">
@@ -17,7 +19,10 @@
             <div class="column-container">
                 <div class="recorder">
                     <div class="player-container" style="align-items: center; margin-top: 0;">
-                        <button disabled id="recordBtn" onclick="record.record()">Record</button>
+                        <button disabled id="recordBtn" onclick="record.record()">
+                            <img id="recordBtnImg" class="button-image" src="images/baseline-mic_none-24px.svg"
+                                alt="Record" />
+                        </button>
                         <canvas id="sound-visualization" class="sound-visualization-canvas"></canvas>
                     </div>
                     <audio id="recordPlayer"></audio>

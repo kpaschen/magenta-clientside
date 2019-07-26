@@ -13,7 +13,17 @@ const PIANO_URL =
 
 const createPlayButton = (el: SVGElement, seq: mm.INoteSequence) => {
     const button = document.createElement('button');
-    button.textContent = 'Play';
+    const playImg = document.createElement("img");
+    playImg.setAttribute("class", "button-image");
+    playImg.setAttribute("src", "images/baseline-play_arrow-24px.svg");
+    playImg.setAttribute("alt", "Play");
+    const stopImg = document.createElement("img");
+    stopImg.setAttribute("class", "button-image");
+    stopImg.setAttribute("src", "images/baseline-stop-24px.svg");
+    stopImg.setAttribute("alt", "Stop");
+    stopImg.hidden = true;
+    button.appendChild(playImg);
+    button.appendChild(stopImg);
     button.disabled = true;
 
     const visualizer = new mm.PianoRollSVGVisualizer(seq, el as SVGSVGElement);
@@ -30,12 +40,14 @@ const createPlayButton = (el: SVGElement, seq: mm.INoteSequence) => {
     button.addEventListener('click', () => {
         if (player.isPlaying()) {
             player.stop();
-            button.textContent = 'Play';
+            stopImg.hidden = true;
+            playImg.hidden = false;
         } else {
-            button.textContent = 'Stop';
+            playImg.hidden = true;
+            stopImg.hidden = false;
             player.start(visualizer.noteSequence)
                 .catch((e) => { console.log(e); })
-                .finally(() => { button.textContent = 'Play'; });
+                .finally(() => { playImg.hidden = false; stopImg.hidden = true; });
         }
     });
     return button;
@@ -111,7 +123,7 @@ class StatusMessages {
         if (isNullOrUndefined(el)) {
             return;
         }
-        while (el.hasChildNodes()) {
+        while (el.childElementCount > 1) {
             el.removeChild(el.firstChild);
         }
         if (isNullOrUndefined(this.messages)) {

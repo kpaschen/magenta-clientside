@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
     <link rel="stylesheet" href="/basic.css">
     <script src="record.js"></script>
     <script src="melody.js"></script>
@@ -28,25 +30,32 @@
         <h1> Music from ambient sounds </h1>
     </header>
     <main>
-        <div class="row-container" style="max-width: 900px;">
+        <div class="page-container" style="max-width: 900px;">
             <div class="column-container" style="flex-grow: 3; margin: 0.4em;">
                 <div class="recorder">
                     <div class="player-container" style="align-items: center;">
-                        <button disabled id="recordBtn" onclick="record.record()">Record</button>
+                        <button disabled id="recordBtn" onclick="record.record()">
+                            <img id="recordBtnImg" class="button-image" src="images/baseline-mic_none-24px.svg"
+                                alt="Record" />
+                        </button>
                         <canvas id="sound-visualization" class="sound-visualization-canvas"></canvas>
                     </div>
                     <audio id="recordPlayer"></audio>
                     <code id="record-results"></code>
                 </div>
                 <div class="composer">
-                    <button disabled id="startRnn" onclick="compose()">Make music</button>
-                    <p>Choose style:
+                    <button disabled id="startRnn" onclick="compose()">
+                        <img id="composeImg" class="button-image" src="images/baseline-music_note-24px.svg"
+                            alt="Compose" />
+                    </button>
+                    <p>Style:
                         <% styles.forEach(function(style) { %>
-                        <input type="radio" name="GeneratorStyle" value=<%= style.id %>><%= style.name %></input>
+                        <input type="radio" name="GeneratorStyle" value=<%= style.id %>><%= style.name %>
+                        </input>
                         <% }); %>
                     </p>
-                    <p><b>Input NoteSequence: </b><code id="melody-cont-inputs"></code></p>
-                    <p><b>Result: </b><code id="melody-cont-results"></code></p>
+                    <p><b>Processed Input: </b><code id="melody-cont-inputs"></code></p>
+                    <p><b>Computer's composition: </b><code id="melody-cont-results"></code></p>
                 </div>
             </div>
             <div style="width: 0.5em; background-color: magenta; margin: 0.4em;"></div>
@@ -63,6 +72,9 @@
                         This is a toy page where I try a few
                         <a href="https://magenta.tensorflow.org/">Magenta</a> tools for generating
                         Music automatically.
+                    </span> <br />
+                    <span class="status-message">
+                        Using icons from <a href="https://google.github.io/material-design-icons/">Material Design</a>
                     </span>
                 </div>
             </div>

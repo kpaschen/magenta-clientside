@@ -19,9 +19,12 @@ class Recorder {
         this.oafA = new mm.OnsetsAndFrames(`${common.CHECKPOINTS_DIR}/transcription/onsets_frames_uni`);
         this.ready = new Promise((resolve, reject) => {
             this.oafA.initialize().then((result) => {
-                common.statusMessages().removeStatusMessage('Loading oafa model');
+                common.statusMessages().removeStatusMessage('Loading sounds-to-midi model');
                 const btn = document.getElementById('recordBtn');
                 btn.removeAttribute('disabled');
+                const btnImg = <HTMLImageElement>document.getElementById('recordBtnImg');
+                btnImg.src = "images/baseline-mic-24px.svg";
+                btnImg.alt = "Record";
                 resolve(undefined);
             }
             ).catch(failure => { console.log(failure); })
@@ -61,8 +64,8 @@ class Recorder {
         canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
         // TODO: move these to a better place.
-        common.statusMessages().addStatusMessage('Loading oafa model');
-        common.statusMessages().addStatusMessage('Loading Rnn Models');
+        common.statusMessages().addStatusMessage('Loading sounds-to-midi model');
+        common.statusMessages().addStatusMessage('Loading Composition Models');
     }
 
     draw = function () {
@@ -103,39 +106,55 @@ class Recorder {
         this.draw.bind(this)();
     }
 
-    record = () => {
+    stopRecording = () => {
         const recordBtn = <HTMLAudioElement>document.getElementById('recordBtn');
+        const btnImg = <HTMLImageElement>document.getElementById('recordBtnImg');
+        this.recordingObj.stop();
+        cancelAnimationFrame(this.animationHandle);
+        this.isRecording = false;
+        btnImg.src = "images/baseline-mic-24px.svg";
+        btnImg.alt = "Record";
+        common.statusMessages().removeStatusMessage('Recording');
+    }
+
+    startRecording = () => {
+        const recordBtn = <HTMLAudioElement>document.getElementById('recordBtn');
+        const btnImg = <HTMLImageElement>document.getElementById('recordBtnImg');
+        this.isRecording = true;
+        this.audioChunks = [];
+        btnImg.src = "images/baseline-mic_off-24px.svg";
+        btnImg.alt = 'Stop Recording';
+        const myTimer = setTimeout(function () { this.stopRecording(); }.bind(this), 10000);
+        common.statusMessages().addStatusMessage('Recording');
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            this.recordingObj = new MediaRecorder(stream);
+            this.visualize(stream);
+            this.recordingObj.addEventListener('dataavailable', e => {
+                this.audioChunks.push(e.data);
+            });
+            this.recordingObj.onstop = function () {
+                const blob = new Blob(recorder.audioChunks);
+                common.statusMessages().addStatusMessage('Transcribing');
+                recorder.transcribeFromFile(blob);
+                if (!isNullOrUndefined(myTimer)) {
+                    clearTimeout(myTimer);
+                }
+            }
+            this.recordingObj.start(1000);
+        }).catch(err => {
+            this.isRecording = false;
+            btnImg.src = "images/baseline-mic_none-24px.svg";
+            btnImg.alt = "Record";
+            console.log('error getting user media: ' + err);
+        });
+    }
+
+    record = () => {
         mm.Player.tone.context.resume();
         if (this.isRecording && !isNull(this.recordingObj)) {
-            this.recordingObj.stop();
-            cancelAnimationFrame(this.animationHandle);
-            this.isRecording = false;
-            recordBtn.textContent = 'Record';
-            common.statusMessages().removeStatusMessage('Recording');
+            this.stopRecording();
         } else {
-            this.isRecording = true;
-            this.audioChunks = [];
-            recordBtn.textContent = 'Stop recording';
-            common.statusMessages().addStatusMessage('Recording');
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                this.recordingObj = new MediaRecorder(stream);
-                this.visualize(stream);
-
-                this.recordingObj.addEventListener('dataavailable', e => {
-                    this.audioChunks.push(e.data);
-                });
-                this.recordingObj.onstop = function (e) {
-                    const blob = new Blob(recorder.audioChunks);
-                    common.statusMessages().addStatusMessage('Transcribing');
-                    recorder.transcribeFromFile(blob);
-                }
-                this.recordingObj.start(1000);
-
-            }).catch(err => {
-                this.isRecording = false;
-                recordBtn.textContent = 'Record';
-                console.log('error getting user media: ' + err);
-            });
+            this.startRecording();
         }
     }
 }

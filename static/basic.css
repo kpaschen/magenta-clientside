@@ -1,0 +1,127 @@
+
+/* overall container for the page. Two columns. */
+.page-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.column-container {
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+}
+
+.composer {
+  margin-top: 1em;
+}
+
+/* This is for the fft-based visualization whilst recording. */
+.sound-visualization-canvas {
+    min-height: 60px;
+    max-width: 500px;
+    height: 10em;
+    flex-grow: 2;
+    margin: 1em;
+}
+
+/* This is for the record button + visualizer and for the
+play button + visualizer combinations. */
+.player-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    margin-top: 1em;
+}
+
+details {
+  max-width: 500px;
+  margin: 1em;
+}
+
+/* SVG visualization of the recorded or generated notes. */
+.visualizer-container {
+  min-height: 60px;
+  max-width: 480px;
+  max-height: 22em;
+  flex-grow: 2;
+  margin: 1em;
+  overflow: auto;
+}
+
+/* Usually advice is to design mobile first
+but this demo page does not do well on
+mobile for technical reasons, so here is a
+desktop-first design. */
+@media handheld, screen and (max-width: 500px) {
+  .page-container {
+    flex-direction: column;
+  }
+  .status-message container {
+    flex-direction: row;
+  }
+  h1 {
+    font-size: 1.5em;
+  }
+  .sound-visualization-canvas {
+    max-width: 260px;
+  }
+  .visualizer-container {
+    max-width: 260px;
+  }
+}
+
+@media handheld, screen and (max-width: 340px) {
+  .sound-visualization-canvas {
+    max-width: 220px;
+  }
+  .visualizer-container {
+    max-width: 220px;
+  }
+}
+
+.note-sequence {
+    max-width: 480px;
+    display: inline-block;
+}
+
+.status-message-container {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  min-width: 150px;
+  max-width: 260px;
+  margin: 0.4em;
+}
+
+.status-message-container.h3 {
+    align-self: center;
+}
+
+.status-message {
+    color: #606060;
+    margin: 0px;
+}
+
+button {
+  border: 1px solid magenta;
+  background-color: #e98ee1;
+  color: black;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: magenta;
+  padding: 5px 10px;
+}
+
+button:disabled,
+button[disabled] {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+}
+
+.button-image {
+  width: 1.5em;
+}
