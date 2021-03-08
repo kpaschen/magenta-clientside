@@ -1,9 +1,10 @@
-import * as mm from '@magenta/music';
+import * as mm from '@magenta/music/es6';
 import * as m2n from './miditonote';
 import { STATUS_CODES } from 'http';
 import { isNullOrUndefined } from 'util';
 
-export const CHECKPOINTS_DIR = '/checkpoints';
+// export const CHECKPOINTS_DIR = '/checkpoints';
+export const CHECKPOINTS_DIR = 'https://storage.googleapis.com/magentadata/js/checkpoints';
 
 // URLS from https://github.com/tensorflow/magenta-js/blob/master/music/README.md#soundfonts
 const SGM_URL =

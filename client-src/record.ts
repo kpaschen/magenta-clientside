@@ -1,4 +1,4 @@
-import * as mm from '@magenta/music';
+import * as mm from '@magenta/music/es6';
 import * as common from './common';
 import { isNull, isNullOrUndefined } from 'util';
 
