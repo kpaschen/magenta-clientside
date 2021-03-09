@@ -4,8 +4,8 @@ import { STATUS_CODES } from 'http';
 import { isNullOrUndefined } from 'util';
 import { saveAs } from 'file-saver';
 
-// export const CHECKPOINTS_DIR = '/checkpoints';
-export const CHECKPOINTS_DIR = 'https://storage.googleapis.com/magentadata/js/checkpoints';
+export const CHECKPOINTS_DIR = 'checkpoints';
+//export const CHECKPOINTS_DIR = 'https://storage.googleapis.com/magentadata/js/checkpoints';
 
 // URLS from https://github.com/tensorflow/magenta-js/blob/master/music/README.md#soundfonts
 const SGM_URL =

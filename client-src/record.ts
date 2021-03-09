@@ -63,7 +63,6 @@ class Recorder {
         canvasCtx.lineWidth = 1;
         canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
-        // TODO: move these to a better place.
 	common.statusMessages().addStatusMessage('record', 'Loading sounds-to-midi model');
     }
 
@@ -139,7 +138,7 @@ class Recorder {
                     clearTimeout(myTimer);
                 }
             }
-            this.recordingObj.start(1000);
+            this.recordingObj.start(6000);
         }).catch(err => {
             this.isRecording = false;
             btnImg.src = "images/baseline-mic_none-24px.svg";

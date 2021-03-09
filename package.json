@@ -25,7 +25,7 @@
   "scripts": {
     "record-script": "npx tsc client-src/record.ts && browserify client-src/record.js --s record >static/record.js",
     "melody-script": "npx tsc client-src/melody-continuation.ts && browserify client-src/melody-continuation.js --s melody >static/melody.js",
-    "build" : "npx tsc && npx tsc client-src/record.ts && browserify client-src/record.js --s record >static/record.js && npx tsc client-src/melody-continuation.ts && browserify client-src/melody-continuation.js --s melody >static/melody.js"
+    "build": "npx tsc && npx tsc client-src/record.ts && browserify client-src/record.js --s record >static/record.js && npx tsc client-src/melody-continuation.ts && browserify client-src/melody-continuation.js --s melody >static/melody.js"
   },
   "author": "kpaschen",
   "license": "ISC"
