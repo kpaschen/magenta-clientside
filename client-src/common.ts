@@ -2,6 +2,7 @@ import * as mm from '@magenta/music/es6';
 import * as m2n from './miditonote';
 import { STATUS_CODES } from 'http';
 import { isNullOrUndefined } from 'util';
+import { saveAs } from 'file-saver';
 
 // export const CHECKPOINTS_DIR = '/checkpoints';
 export const CHECKPOINTS_DIR = 'https://storage.googleapis.com/magentadata/js/checkpoints';
@@ -11,6 +12,20 @@ const SGM_URL =
     'https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus';
 const PIANO_URL =
     'https://storage.googleapis.com/magentadata/js/soundfonts/salamander';
+
+const createSaveButton = (seq: mm.INoteSequence) => {
+   const button = document.createElement('button');
+   const saveImg = document.createElement("img");
+   saveImg.setAttribute("class", "button-image");
+   saveImg.setAttribute("src", "images/save_alt-24px.svg");
+   saveImg.setAttribute("alt", "Save");
+   button.appendChild(saveImg);
+   button.addEventListener('click', () => {
+     saveAs(new File([mm.sequenceProtoToMidi(seq)],
+     'recording.midi'));
+   });
+   return button;
+}
 
 const createPlayButton = (el: SVGElement, seq: mm.INoteSequence) => {
     const button = document.createElement('button');
@@ -60,6 +75,7 @@ export const writeNoteSeqs = (elementId: string, seq: mm.INoteSequence) => {
 
     const buttonsDiv = document.createElement('div');
     buttonsDiv.appendChild(createPlayButton(el, seq));
+    buttonsDiv.appendChild(createSaveButton(seq));
 
     const details = document.createElement('details');
     const summary = document.createElement('summary');

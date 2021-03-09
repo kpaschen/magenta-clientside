@@ -65,7 +65,6 @@ class Recorder {
 
         // TODO: move these to a better place.
         common.statusMessages().addStatusMessage('Loading sounds-to-midi model');
-        common.statusMessages().addStatusMessage('Loading Composition Models');
     }
 
     draw = function () {

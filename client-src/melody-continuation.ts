@@ -31,6 +31,7 @@ class Melody {
     this.models.Chords.model = new mm.MusicRNN(this.models.Chords.path);
     this.models.Basic.model = new mm.MusicRNN(this.models.Basic.path);
 
+    common.statusMessages().addStatusMessage('Loading Composition Models');
     this.ready = new Promise((resolve, reject) => {
       // This is just to get access to the min and max pitch values.
       fetch(`${this.models.Melody.path}/config.json`).then((spec) => {

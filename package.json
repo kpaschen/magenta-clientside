@@ -12,6 +12,7 @@
     "browserify": "^16.2.3",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
+    "file-saver": "latest",
     "ts-loader": "^6.2.0",
     "typescript": "^4.2.3",
     "webmidi": "^2.3.3"
@@ -23,7 +24,8 @@
   },
   "scripts": {
     "record-script": "npx tsc client-src/record.ts && browserify client-src/record.js --s record >static/record.js",
-    "melody-script": "npx tsc client-src/melody-continuation.ts && browserify client-src/melody-continuation.js --s melody >static/melody.js"
+    "melody-script": "npx tsc client-src/melody-continuation.ts && browserify client-src/melody-continuation.js --s melody >static/melody.js",
+    "build" : "npx tsc && npx tsc client-src/record.ts && browserify client-src/record.js --s record >static/record.js && npx tsc client-src/melody-continuation.ts && browserify client-src/melody-continuation.js --s melody >static/melody.js"
   },
   "author": "kpaschen",
   "license": "ISC"
