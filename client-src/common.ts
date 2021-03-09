@@ -125,34 +125,35 @@ class StatusMessages {
     messages: string[] = [];
     ELEMENTID = 'status-messages';
 
-    addStatusMessage = (msg: string) => {
+    addStatusMessage = (module: string, msg: string) => {
         this.messages.push(msg);
-        this.updateStatusDisplay();
+        this.updateStatusDisplay(module);
     };
 
-    removeStatusMessage = (msg: string) => {
+    removeStatusMessage = (module: string, msg: string) => {
         this.messages = this.messages.filter((f) => (f != msg));
-        this.updateStatusDisplay();
+        this.updateStatusDisplay(module);
     }
 
-    updateStatusDisplay() {
-        const el = document.getElementById(this.ELEMENTID);
+    updateStatusDisplay(module: string) {
+        const el = document.getElementById(this.ELEMENTID + "-" + module);
         if (isNullOrUndefined(el)) {
             return;
         }
-        while (el.childElementCount > 1) {
+        while (el.childElementCount > 0) {
             el.removeChild(el.firstChild);
         }
-        if (isNullOrUndefined(this.messages)) {
-            const readymsg = document.getElementById('ready-msg');
-            readymsg.setAttribute("style", "visibility:inline");
-        } else {
+	const readymsg = document.getElementById("ready-msg-" + module);
+	if (isNullOrUndefined(this.messages) || this.messages.length == 0) {
+	    readymsg.setAttribute("style", "visibility:inline")
+	} else {
             this.messages.forEach(msg => {
                 const newmsg = document.createElement("p");
                 newmsg.innerText = msg;
                 newmsg.setAttribute('class', 'status-message');
                 el.appendChild(newmsg);
             });
+	    readymsg.setAttribute("style", "visibility:hidden")
         }
     }
 }

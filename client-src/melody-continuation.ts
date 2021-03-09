@@ -31,7 +31,7 @@ class Melody {
     this.models.Chords.model = new mm.MusicRNN(this.models.Chords.path);
     this.models.Basic.model = new mm.MusicRNN(this.models.Basic.path);
 
-    common.statusMessages().addStatusMessage('Loading Composition Models');
+    common.statusMessages().addStatusMessage('compose', 'Loading Composition Models');
     this.ready = new Promise((resolve, reject) => {
       // This is just to get access to the min and max pitch values.
       fetch(`${this.models.Melody.path}/config.json`).then((spec) => {
@@ -56,7 +56,7 @@ class Melody {
         this.models.Chords.model.initialize().then((result) => {
           this.models.Basic.model.initialize().then((results) => {
             // Update display
-            common.statusMessages().removeStatusMessage('Loading Composition Models');
+            common.statusMessages().removeStatusMessage('compose', 'Loading Composition Models');
             resolve(undefined);
           })
         })
@@ -71,7 +71,7 @@ class Melody {
   }
 
   async runMusicRnn(noteSequence, generatorType) {
-    common.statusMessages().addStatusMessage('Composing');
+    common.statusMessages().addStatusMessage('compose', 'Composing');
     // Display the input.
     let qns = mm.sequences.quantizeNoteSequence(noteSequence, 4);
     let modelType = this.models[generatorType];
@@ -98,7 +98,7 @@ class Melody {
     console.log('continuation; ');
     console.log(continuation);
     common.writeNoteSeqs('melody-cont-results', continuation);
-    common.statusMessages().removeStatusMessage('Composing');
+    common.statusMessages().removeStatusMessage('compose', 'Composing');
   }
 }
 
