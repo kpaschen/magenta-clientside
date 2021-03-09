@@ -24,7 +24,6 @@
         }
     </script>
 </head>
-
 <body class="container" onbeforeunload="disposeModels()" onload="record.initCanvas()">
     <header>
         <h1> Music from ambient sounds </h1>
@@ -62,8 +61,10 @@
             <div class="column-container" style="margin: 0.em;">
                 <div class="status-message-container">
                     <h3>Status</h3>
-                    <span class="status-message" id="ready-msg" style="visibility:hidden;">Ready</span>
-                    <span id="status-messages"></span>
+                    <span class="status-message" id="ready-msg-record" style="visibility:hidden;">Ready to record</span>
+                    <span class="status-message" id="ready-msg-compose" style="visibility:hidden;">Ready to compose</span>
+                    <span id="status-messages-record"></span>
+                    <span id="status-messages-compose"></span>
                 </div>
                 <hr width=100% />
                 <div class="status-message-container">

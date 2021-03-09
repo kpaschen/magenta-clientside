@@ -1,4 +1,4 @@
-import * as mm from '@magenta/music';
+import * as mm from '@magenta/music/es6';
 import * as common from './common';
 import { isNull, isNullOrUndefined } from 'util';
 
@@ -19,7 +19,7 @@ class Recorder {
         this.oafA = new mm.OnsetsAndFrames(`${common.CHECKPOINTS_DIR}/transcription/onsets_frames_uni`);
         this.ready = new Promise((resolve, reject) => {
             this.oafA.initialize().then((result) => {
-                common.statusMessages().removeStatusMessage('Loading sounds-to-midi model');
+	    common.statusMessages().removeStatusMessage('record', 'Loading sounds-to-midi model');
                 const btn = document.getElementById('recordBtn');
                 btn.removeAttribute('disabled');
                 const btnImg = <HTMLImageElement>document.getElementById('recordBtnImg');
@@ -51,7 +51,7 @@ class Recorder {
             if (!isNullOrUndefined(rnnBtn)) {
                 rnnBtn.removeAttribute('disabled');
             }
-            common.statusMessages().removeStatusMessage('Transcribing');
+	    common.statusMessages().removeStatusMessage('record', 'Transcribing');
         });
     }
 
@@ -64,8 +64,7 @@ class Recorder {
         canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
         // TODO: move these to a better place.
-        common.statusMessages().addStatusMessage('Loading sounds-to-midi model');
-        common.statusMessages().addStatusMessage('Loading Composition Models');
+	common.statusMessages().addStatusMessage('record', 'Loading sounds-to-midi model');
     }
 
     draw = function () {
@@ -114,7 +113,7 @@ class Recorder {
         this.isRecording = false;
         btnImg.src = "images/baseline-mic-24px.svg";
         btnImg.alt = "Record";
-        common.statusMessages().removeStatusMessage('Recording');
+	common.statusMessages().removeStatusMessage('record', 'Recording');
     }
 
     startRecording = () => {
@@ -125,7 +124,7 @@ class Recorder {
         btnImg.src = "images/baseline-mic_off-24px.svg";
         btnImg.alt = 'Stop Recording';
         const myTimer = setTimeout(function () { this.stopRecording(); }.bind(this), 10000);
-        common.statusMessages().addStatusMessage('Recording');
+	common.statusMessages().addStatusMessage('record', 'Recording');
         navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
             this.recordingObj = new MediaRecorder(stream);
             this.visualize(stream);
@@ -134,7 +133,7 @@ class Recorder {
             });
             this.recordingObj.onstop = function () {
                 const blob = new Blob(recorder.audioChunks);
-                common.statusMessages().addStatusMessage('Transcribing');
+		common.statusMessages().addStatusMessage('record', 'Transcribing');
                 recorder.transcribeFromFile(blob);
                 if (!isNullOrUndefined(myTimer)) {
                     clearTimeout(myTimer);
